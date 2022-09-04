@@ -44,11 +44,10 @@ const thoughtController = {
   addThought({ body }, res) {
     console.log(body);
     Thought.create(body)
-      .then(({ _id, params}) => {
-        //is creating new thought but not populating to user's thought array
-          console.log(params.userId)
+      .then(({ _id }) => {
+        //is adding whole thought, not just throught _id
         return User.findOneAndUpdate(
-            { id: params.userId },
+            { id: body.userId },
             { $push: { thoughts: _id } },
             { new: true }
             );
