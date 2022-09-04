@@ -53,6 +53,7 @@ const ThoughtSchema = new Schema(
       trim: true,
     },
     //like replies
+    // Array of nested documents created with the reactionSchema
     reactions: [ReactionSchema],
   },
   {

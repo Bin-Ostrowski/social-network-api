@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Thought } = require("../models");
 
 const userController = {
   //get all Users - GET /api/users
@@ -67,18 +67,19 @@ const userController = {
   },
 
   //DELETE to remove user by its _id
-  deleteUser({ params }, res) {
-    User.findOneAndDelete(
-        { _id: params.id },
-        //BONUS: Remove a user's associated thoughts when deleted.
-        { $pull: {thoughts: {thoughtId: params._id}}},
-        )
+  deleteUser({ params, body }, res) {
+    // //BONUS: Remove a user's associated thoughts when deleted.
+    // //!!!!!!!!!thoughtId is undefined right now!!!!!!!!!
+    // User.remove(
+    //     { thoughts: { $eq: body.userName } })
+    User.findOneAndDelete({ _id: params.id })
+
       .then((dbUserData) => {
         if (!dbUserData) {
           res.status(404).json({ message: "No User found with this id!" });
           return;
         }
-        res.json(dbUserData);
+        res.json({ message: "User deleted" });
       })
       .catch((err) => res.status(400).json(err));
   },
@@ -87,30 +88,30 @@ const userController = {
   //POST to add a new friend to a user's friend list
   addFriend({ params }, res) {
     User.findOneAndUpdate(
-        { _id: params.userId },
-        { $push: {friends: params._id } },
-        { new: true }
+      { _id: params.userId },
+      { $push: { friends: params.friendId } },
+      { new: true }
     )
-    .then((dbUserData) => {
-        if(!dbUserData) {
-            res.status(404).json({ message: "No User found with this id!"});
-            return;
+      .then((dbUserData) => {
+        if (!dbUserData) {
+          res.status(404).json({ message: "No User found with this id!" });
+          return;
         }
         res.json(dbUserData);
-    })
-    .catch((err) => res.json(err));
+      })
+      .catch((err) => res.json(err));
   },
   //DELETE to remove a friend from a user's friend list
-   ///api/users/:userId/friends/:friendId
+  ///api/users/:userId/friends/:friendId
   removeFriend({ params }, res) {
     User.findOneAndUpdate(
-        { _id: params.userId },
-        { $pull: { friends: { _id: params._id} } },
-        { new: true }
+      { _id: params.userId },
+      { $pull: { friends: params.friendId } },
+      { new: true }
     )
-    .then((dbUserData) => res.json(dbUserData))
-    .catch((err) => res.json(err));
-  }
+      .then((dbUserData) => res.json(dbUserData))
+      .catch((err) => res.json(err));
+  },
 };
 
 module.exports = userController;

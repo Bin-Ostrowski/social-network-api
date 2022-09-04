@@ -4,11 +4,12 @@ const thoughtController = {
   //GET to get all thoughts - GET /api/thoughts
   getAllThought(req, res) {
     Thought.find({})
-    //   .populate({
-    //       path: "reactions",
-    //       select: "-__v",
-    //   })
-    //   .select("-__v")
+      // it works without this... why????
+      //   .populate({
+      //       path: "reactions",
+      //       select: "-__v",
+      //   })
+      //   .select("-__v")
       .sort({ _id: -1 })
       .then((dbThoughtData) => res.json(dbThoughtData))
       .catch((err) => {
@@ -24,7 +25,7 @@ const thoughtController = {
       //     path: "reactions",
       //     select: "-__v",
       // })
-    //   .select("-__v")
+      //   .select("-__v")
       .sort({ _id: -1 })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
@@ -47,14 +48,16 @@ const thoughtController = {
       .then(({ _id }) => {
         //is adding whole thought, not just throught _id
         return User.findOneAndUpdate(
-            { id: body.userId },
-            { $push: { thoughts: _id } },
-            { new: true }
-            );
-        })
+          { _id: body.userId },
+          { $push: { thoughts: _id } },
+          { new: true }
+        );
+      })
       .then((dbUserData) => {
         if (!dbUserData) {
-          res.status(404).json({ message: "No User found with this userName!" });
+          res
+            .status(404)
+            .json({ message: "No User found with this userName!" });
           return;
         }
         res.json(dbUserData);
@@ -65,22 +68,23 @@ const thoughtController = {
   //PUT to update a thought by its _id
   updateThought({ params, body }, res) {
     console.log(body);
-    Thought.findOneAndUpdate({ _id: params.id}, body, { new: true, runValidators: true,})
+    Thought.findOneAndUpdate({ _id: params.id }, body, {
+      new: true,
+      runValidators: true,
+    })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
-            res.status(404).json({ message: "No Thought found with this id!" });
+          res.status(404).json({ message: "No Thought found with this id!" });
           return;
-        };
+        }
       })
-      //is not getting to User.findOneAndUdate
-    .then(({ _id }) => {
+      .then(({ _id }) => {
         return User.findOneAndUpdate(
           { _id: params.userId },
           { $push: { thoughts: _id } },
           { new: true }
         );
       })
-      // is this neccesary? 
       .then((dbUserData) => {
         if (!dbUserData) {
           res.status(404).json({ message: "No User found with this id!" });
@@ -92,26 +96,14 @@ const thoughtController = {
   },
 
   //DELETE to remove a thought by its _id
-  //errors with deleting from user without having it in IP address
   removeThought({ params }, res) {
     Thought.findOneAndDelete({ _id: params.id })
       .then((deleteThought) => {
         if (!deleteThought) {
           return res.status(404).json({ message: "No thought with this id!" });
         }
-        // return User.findOneAndUpdate(
-        //   { _id: params.userId },
-        //   { $pull: { thoughts: params.thoughtId } },
-        //   { new: true }
-        // );
-      })
-      .then((dbUserData) => {
-        if (!dbUserData) {
-          res.status(404).json({ message: "No user found with this id!" });
-          return;
-        }
         // return the updated user data
-        res.json(dbUserData);
+        res.json({ message: "thought deleted" });
       })
       .catch((err) => res.json(err));
   },
@@ -119,31 +111,31 @@ const thoughtController = {
   //POST to create a reaction stored in a single thought's reactions array field
   addReaction({ params, body }, res) {
     Thought.findOneAndUpdate(
-        { _id: params.thoughtId },
-        { $push: {reactions: body } },
-        { new: true, runValidators: true }
+      { _id: params.thoughtId },
+      { $push: { reactions: body } },
+      { new: true, runValidators: true }
     )
-    .then((dbThoughtData) => {
-        if(!dbThoughtData) {
-            res.status(404).json({ message: "No thought found with this id!"});
-            return;
+      .then((dbThoughtData) => {
+        if (!dbThoughtData) {
+          res.status(404).json({ message: "No thought found with this id!" });
+          return;
         }
         res.json(dbThoughtData);
-    })
-    .catch((err) => res.json(err));
+      })
+      .catch((err) => res.json(err));
   },
 
   //DELETE to pull and remove a reaction by the reaction's reactionId value
   //api/thoughts/:thoughtId/reactions/:reactionId
   removeReaction({ params }, res) {
     Thought.findOneAndUpdate(
-        { _id: params.thoughtId },
-        { $pull: { reactions: { reactionId: params.reactionId} } },
-        { new: true }
+      { _id: params.thoughtId },
+      { $pull: { reactions: { reactionId: params.reactionId } } },
+      { new: true }
     )
-    .then((dbThoughtData) => res.json(dbThoughtData))
-    .catch((err) => res.json(err));
-  }
+      .then((dbThoughtData) => res.json(dbThoughtData))
+      .catch((err) => res.json(err));
+  },
 };
 
 module.exports = thoughtController;

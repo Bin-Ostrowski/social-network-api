@@ -15,13 +15,14 @@ const UserSchema = new Schema(
       required: true,
       validate: [isEmail, "Please enter a valid email"],
     },
+    //	Array of _id values referencing the Thought model
     thoughts: [
       {
         type: Schema.Types.ObjectId,
         ref: "Thought",
       },
     ],
-    //firends: help here!!
+    // Array of _id values referencing the User model (self-reference)
     friends: [
       {
         type: Schema.Types.ObjectId,
@@ -36,7 +37,8 @@ const UserSchema = new Schema(
   }
 );
 
-//   Get total count of replies on retrieval (using Virtuals)
+// Create a virtual called friendCount that retrieves the length
+// of the user's friends array field on query.
 UserSchema.virtual("friendCount").get(function () {
   return this.friends.length;
 });
