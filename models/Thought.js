@@ -1,36 +1,37 @@
 const { Schema, model, Types } = require("mongoose");
+const dateFormat = require("../utils/dateFormat");
 
 const ReactionSchema = new Schema(
-    {
-     //set custom id to avoid confusion with parent thought _id
+  {
+    //set custom id to avoid confusion with parent thought _id
     reactionId: {
-        type: Schema.Types.ObjectId,
-        default: () => new Types.ObjectId(),
-      },
-      reactionBody: {
-        type: String,
-        required: true,
-        maxlength:[280, 'Your reaction is too long'],
-        trim: true,
-      },
-      userName: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-        //getters to transform data using utils function dateFormat
-      // get: (createdAtVal) => dateFormat(createdAtVal),
-      }
+      type: Schema.Types.ObjectId,
+      default: () => new Types.ObjectId(),
     },
-    // {
-    //     toJSON: {
-    //       getters: true,
-    //     },
-    //   }
-)
+    reactionBody: {
+      type: String,
+      required: true,
+      maxlength: [280, "Your reaction is too long"],
+      trim: true,
+    },
+    userName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      // getters to transform data using utils function dateFormat
+      get: (createdAtVal) => dateFormat(createdAtVal),
+    },
+  },
+  {
+    toJSON: {
+      getters: true,
+    },
+  }
+);
 
 const ThoughtSchema = new Schema(
   {
@@ -43,8 +44,8 @@ const ThoughtSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      //use getter!
-      // get: (createdAtVal) => dateFormat(createdAtVal),
+      // getters to transform data using utils function dateFormat
+      get: (createdAtVal) => dateFormat(createdAtVal),
     },
     userName: {
       type: String,
@@ -63,10 +64,10 @@ const ThoughtSchema = new Schema(
   }
 );
 
-// Get total count of replies on retrieval (using Virtuals)
+// Get total count of reactions on retrieval (using Virtuals)
 ThoughtSchema.virtual("reactionCount").get(function () {
-    return this.reactions.length;
-  });
+  return this.reactions.length;
+});
 
 //create Thought model using ThoughtSchema
 const Thought = model("Thought", ThoughtSchema);
