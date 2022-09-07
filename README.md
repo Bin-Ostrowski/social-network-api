@@ -6,6 +6,7 @@
   ## Table of Content
   - [Description](#description)
   - [Installation](#installation)
+  - [Uses](#uses)
   - [Questions](#questions)
   
   ## Installation
@@ -15,7 +16,11 @@
   4. Run the command `npm start` to run the server.
   6. Open insomnia and test all the api points.
   7. An example GET api route is: localhost:3001/api/users
-  
+
+  ## Uses
+
+  To see a video of all routes in action [click here!](https://drive.google.com/file/d/1A_73indLeMg-bL21lLc9G-zDeBRVKCIH/view)
+
   ## Questions
   GitHub: [Bin-Ostrowski](https://github.com/Bin-Ostrowski)
   
