@@ -1,7 +1,7 @@
 # Social Network API 
         
   ## Description
-  Social Network API uses Mongodb and Mongoose to create the back end CRUD API routes for a social network app.
+  Social Network API is a back-end app using Mongodb, Mongoose and Express.js to create CRUD API routes for a social network app.
           
   ## Table of Content
   - [Description](#description)
